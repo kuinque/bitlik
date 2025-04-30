@@ -14,10 +14,9 @@
             <nav>
                 <ul>
                     <li><a href="{{ url_for('index') }}">Главная</a></li>
-                    {% if 'user_id' in session %}
-                        <li><a href="{{ url_for('dashboard') }}">Рынок</a></li>
-                        <li><a href="{{ url_for('p2p_page') }}">P2P</a></li> <!-- ДОБАВЛЕНО -->
-                        <li><a href="{{ url_for('history') }}">История рынка</a></li>
+                    {% if 'username' in session %}
+                        <li><a href="{{ url_for('dashboard') }}">Кабинет</a></li>
+                        <li><a href="{{ url_for('history') }}">История</a></li> <!-- ДОБАВЛЕНО -->
                         <li><a href="{{ url_for('logout') }}">Выйти ({{ session['username'] }})</a></li>
                     {% else %}
                         <li><a href="{{ url_for('login') }}">Войти</a></li>
