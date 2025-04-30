@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BitLik{% endblock %}</title>
+    <!-- Подключаем наш обновленный CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">  <!-- Добавлен контейнер в шапку -->
+            <h1><a href="{{ url_for('index') }}">BitLik</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('index') }}">Главная</a></li>
+                    {% if 'user_id' in session %}
+                        <li><a href="{{ url_for('dashboard') }}">Рынок</a></li>
+                        <li><a href="{{ url_for('p2p_page') }}">P2P</a></li> <!-- ДОБАВЛЕНО -->
+                        <li><a href="{{ url_for('history') }}">История рынка</a></li>
+                        <li><a href="{{ url_for('logout') }}">Выйти ({{ session['username'] }})</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('login') }}">Войти</a></li>
+                        <li><a href="{{ url_for('register') }}">Регистрация</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container"> <!-- Добавлен контейнер для основного контента -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %} <!-- Содержимое будет внутри контейнера -->
+    </main>
+
+    <footer>
+        <p>&copy; {{ now.year if now else 2024 }} Мини Криптобиржа (Демо)</p>
+        <!-- Добавил динамический год, если передается переменная now -->
+    </footer>
+
+    <!-- Опционально: Передаем текущий год в шаблон -->
+    {% if not now %}
+        {% set now = {'year': 2024} %} <!-- Запасной вариант, если now не передали -->
+    {% endif %}
+
+</body>
+</html>

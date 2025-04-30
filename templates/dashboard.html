@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Личный Кабинет{% endblock %}
+
+{% block content %}
+    <h2>Личный Кабинет - {{ session['username'] }}</h2>
+
+    <div class="card dashboard-section"> <!-- Карточка для балансов -->
+       <h3>Ваши Балансы:</h3>
+       <ul class="balance-list">
+            <!-- Используем переданный словарь balances -->
+            <li><strong>USD:</strong> <span>${{ "%.2f"|format(balances.get('USD', 0.0)) }}</span></li>
+            <li><strong>BTC:</strong> <span>{{ "%.8f"|format(balances.get('BTC', 0.0)) }}</span></li>
+            <li><strong>ETH:</strong> <span>{{ "%.8f"|format(balances.get('ETH', 0.0)) }}</span></li>
+            <li><strong>DOGE:</strong> <span>{{ "%.8f"|format(balances.get('DOGE', 0.0)) }}</span></li>
+        </ul>
+    </div>
+
+     <div class="card dashboard-section">
+         <h3>Ваши Балансы (Рынок)</h3>
+         <ul class="balance-list">
+             <li><strong>USD:</strong>
+                <span>${{ balances_total.get('USD', '0.0') | format_decimal(precision=2) }}</span>
+                <small class="text-muted">(Доступно: ${{ balances_available.get('USD', '0.0') | format_decimal(precision=2) }})</small>
+             </li>
+             <li><strong>BTC:</strong>
+                <span>{{ balances_total.get('BTC', '0.0') | format_decimal(precision=8) }}</span>
+                <small class="text-muted">(Доступно: {{ balances_available.get('BTC', '0.0') | format_decimal(precision=8) }})</small>
+             </li>
+             <li><strong>ETH:</strong>
+                 <span>{{ balances_total.get('ETH', '0.0') | format_decimal(precision=8) }}</span>
+                 <small class="text-muted">(Доступно: {{ balances_available.get('ETH', '0.0') | format_decimal(precision=8) }})</small>
+             </li>
+             <li><strong>DOGE:</strong>
+                 <span>{{ balances_total.get('DOGE', '0.0') | format_decimal(precision=4) }}</span>
+                 <small class="text-muted">(Доступно: {{ balances_available.get('DOGE', '0.0') | format_decimal(precision=4) }})</small>
+             </li>
+         </ul>
+     </div>
+
+      <div class="card dashboard-section">
+          <h3>Быстрая Рыночная Торговля</h3>
+          <p class="small text-muted">Сделки исполняются немедленно по фиксированной цене.</p>
+          <form method="post" action="{{ url_for('dashboard') }}">
+              <!-- Форма как раньше -->
+              <div>
+                  <label for="market_action">Действие:</label>
+                  <select id="market_action" name="action" class="form-select">...</select>
+              </div>
+               <div>
+                    <label for="market_coin">Монета:</label>
+                    <select id="market_coin" name="coin" class="form-select">
+                        {% for coin, price in prices.items() %}
+                        <option value="{{ coin }}">{{ coin }} (Рын. цена: ${{ price | format_decimal(precision=2) }})</option>
+                        {% endfor %}
+                    </select>
+               </div>
+              <div>
+                  <label for="market_amount">Количество (монет):</label>
+                  <input type="number" id="market_amount" ... class="form-control">
+              </div>
+              <button type="submit" class="btn btn-success">Выполнить Рыночную Сделку</button>
+          </form>
+      </div>
+{% endblock %}

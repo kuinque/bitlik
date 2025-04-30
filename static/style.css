@@ -1,0 +1,272 @@
+/* --- Базовые стили и сброс --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    line-height: 1.6;
+    background-color: #f8f9fa; /* Светло-серый фон */
+    color: #343a40; /* Темно-серый текст */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+a {
+    color: #007bff; /* Синий цвет для ссылок */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* --- Основной контейнер --- */
+.container {
+    width: 100%;
+    max-width: 960px; /* Ограничиваем максимальную ширину */
+    margin: 20px auto; /* Центрируем и добавляем отступы сверху/снизу */
+    padding: 0 15px; /* Отступы по бокам */
+    flex-grow: 1; /* Заставляет main расти, чтобы footer был внизу */
+}
+
+/* --- Шапка --- */
+header {
+    background-color: #ffffff; /* Белый фон шапки */
+    padding: 15px 0;
+    border-bottom: 1px solid #dee2e6; /* Тонкая серая линия снизу */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between; /* Лого слева, навигация справа */
+    align-items: center;
+    margin-top: 0; /* Убираем верхний отступ для контейнера в хедере */
+    margin-bottom: 0; /* Убираем нижний отступ для контейнера в хедере */
+}
+
+
+header h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+header h1 a {
+    color: #343a40; /* Темный цвет для заголовка */
+    font-weight: bold;
+}
+header h1 a:hover {
+    text-decoration: none;
+}
+
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+nav ul li {
+    display: inline-block; /* Элементы навигации в строку */
+    margin-left: 15px;
+}
+
+nav ul li a {
+    color: #495057; /* Серый цвет ссылок */
+    font-weight: 500;
+    padding: 5px 0;
+    transition: color 0.2s ease-in-out;
+}
+
+nav ul li a:hover {
+    color: #007bff; /* Синий при наведении */
+    text-decoration: none;
+}
+
+/* --- Основной контент и "Карточки" --- */
+main {
+    padding-top: 20px; /* Отступ сверху в main */
+}
+
+.card {
+    background-color: #ffffff; /* Белый фон карточек */
+    border: 1px solid #dee2e6; /* Серая рамка */
+    border-radius: 8px; /* Скругленные углы */
+    padding: 25px; /* Внутренние отступы */
+    margin-bottom: 20px; /* Отступ снизу */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.07); /* Легкая тень */
+}
+
+.card h2, .card h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #212529;
+}
+
+/* --- Формы --- */
+form div {
+    margin-bottom: 15px; /* Отступ между полями */
+}
+
+label {
+    display: block; /* Метка над полем */
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #495057;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+select {
+    width: 100%; /* Поля на всю ширину */
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+select:focus {
+    border-color: #80bdff; /* Голубая рамка при фокусе */
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Легкое свечение */
+}
+
+button[type="submit"] {
+    display: inline-block;
+    background-color: #007bff; /* Синий фон кнопки */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3; /* Темно-синий при наведении */
+}
+
+/* Ссылки под формами (Войти/Регистрация) */
+form + p {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+/* --- Таблицы --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: #fff; /* Белый фон для таблицы внутри .card */
+}
+
+th, td {
+    border: 1px solid #dee2e6;
+    padding: 12px 15px; /* Увеличенные отступы */
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    background-color: #e9ecef; /* Светло-серый фон заголовков */
+    font-weight: 600;
+    color: #495057;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f8f9fa; /* Чередующиеся строки */
+}
+
+tbody tr:hover {
+    background-color: #e9ecef; /* Подсветка строки при наведении */
+}
+
+/* --- Сообщения (Flashes) --- */
+.flashes {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.flashes li {
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+}
+
+.flashes .success {
+    color: #155724; /* Темно-зеленый текст */
+    background-color: #d4edda; /* Светло-зеленый фон */
+    border-color: #c3e6cb; /* Зеленая рамка */
+}
+
+.flashes .error {
+    color: #721c24; /* Темно-красный текст */
+    background-color: #f8d7da; /* Светло-красный фон */
+    border-color: #f5c6cb; /* Красная рамка */
+}
+
+/* --- Стили для Dashboard --- */
+.dashboard-section {
+    margin-bottom: 30px; /* Больший отступ между секциями дашборда */
+}
+
+.balance-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.balance-list li {
+    padding: 8px 0;
+    border-bottom: 1px dashed #eee; /* Разделитель */
+    display: flex;
+    justify-content: space-between; /* Название слева, значение справа */
+}
+.balance-list li:last-child {
+    border-bottom: none;
+}
+
+.balance-list li strong {
+    color: #495057;
+}
+
+/* --- Подвал --- */
+footer {
+    background-color: #ffffff;
+    text-align: center;
+    padding: 15px 0;
+    margin-top: 30px; /* Отступ от основного контента */
+    color: #6c757d; /* Серый цвет текста */
+    font-size: 0.9em;
+    border-top: 1px solid #dee2e6;
+}
+
+/* --- Простая Адаптивность --- */
+@media (max-width: 768px) {
+    header .container {
+        flex-direction: column;
+        align-items: center;
+    }
+    header h1 {
+        margin-bottom: 10px;
+    }
+    nav ul li {
+        margin: 0 8px; /* Уменьшить отступы в навигации */
+    }
+    .card {
+        padding: 15px;
+    }
+}

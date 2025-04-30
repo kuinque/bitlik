@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}P2P Торговля{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>P2P Торговля</h2>
+
+    <!-- Форма Размещения Ордера -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3 class="card-title">Разместить P2P Ордер</h3>
+            <form action="{{ url_for('place_p2p_order') }}" method="post">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="p2p_order_type" class="form-label">Действие:</label>
+                        <select name="order_type" id="p2p_order_type" class="form-select" required>
+                            <option value="buy">Купить</option>
+                            <option value="sell">Продать</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="p2p_crypto_currency" class="form-label">Криптовалюта:</label>
+                        <select name="crypto_currency" id="p2p_crypto_currency" class="form-select" required>
+                            {% for coin in available_crypto %}
+                            <option value="{{ coin }}">{{ coin }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="p2p_price_per_unit" class="form-label">Цена за 1 единицу (USD):</label>
+                        <input type="number" step="0.00000001" min="0.00000001" name="price_per_unit" id="p2p_price_per_unit" class="form-control" required placeholder="Например: 50100.50">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="p2p_amount_crypto" class="form-label">Количество Криптовалюты:</label>
+                        <input type="number" step="0.00000001" min="0.00000001" name="amount_crypto" id="p2p_amount_crypto" class="form-control" required placeholder="Например: 0.1">
+                    </div>
+                </div>
+                 <p class="small text-muted">
+                     Доступно USD: ${{ available_balances.get('USD', '0.0') | format_decimal(precision=2) }} |
+                     Доступно BTC: {{ available_balances.get('BTC', '0.0') | format_decimal(precision=8) }} |
+                     Доступно ETH: {{ available_balances.get('ETH', '0.0') | format_decimal(precision=8) }} |
+                     Доступно DOGE: {{ available_balances.get('DOGE', '0.0') | format_decimal(precision=4) }}
+                 </p>
+                <button type="submit" class="btn btn-primary">Разместить ордер</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Мои Открытые Ордера -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3 class="card-title">Мои Открытые P2P Ордера</h3>
+            {% if my_open_orders %}
+            <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Тип</th>
+                            <th>Пара</th>
+                            <th>Цена (USD)</th>
+                            <th>Начальное Кол-во</th>
+                            <th>Осталось Кол-во</th>
+                            <th>Создан</th>
+                            <th>Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in my_open_orders %}
+                        <tr class="{{ 'table-success' if order.order_type == 'buy' else 'table-danger' }}">
+                            <td>{{ order.id }}</td>
+                            <td>{{ order.order_type | capitalize }}</td>
+                            <td>{{ order.crypto_currency }}/{{ order.fiat_currency }}</td>
+                            <td>{{ order.price_per_unit | format_decimal(precision=4) }}</td>
+                            <td>{{ order.amount_crypto_initial | format_decimal(precision=8) }}</td>
+                            <td>{{ order.amount_crypto_remaining | format_decimal(precision=8) }}</td>
+                            <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <form action="{{ url_for('cancel_p2p_order', order_id=order.id) }}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-warning btn-sm" onclick="return confirm('Отменить ордер {{order.id}}?')">Отменить</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>У вас нет открытых P2P ордеров.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Стакан Заявок (Order Book) -->
+     <div class="card mb-4">
+        <div class="card-body">
+            <h3 class="card-title">Стакан Заявок (Лучшие предложения других пользователей)</h3>
+            <div class="row">
+            {% for coin, book in order_book.items() %}
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <h4>{{ coin }}/USD</h4>
+                     <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr><th colspan="2" class="text-center text-danger">Продажа (Asks)</th></tr>
+                                <tr><th>Цена (USD)</th><th>Кол-во {{ coin }}</th></tr>
+                            </thead>
+                            <tbody>
+                            {% for ask in book.asks %}
+                                <tr>
+                                    <td class="text-danger">{{ ask.price_per_unit | format_decimal(precision=4) }}</td>
+                                    <td>{{ ask.amount_crypto_remaining | format_decimal(precision=8) }}</td>
+                                </tr>
+                             {% else %}
+                                <tr><td colspan="2" class="text-center text-muted small">Нет предложений</td></tr>
+                             {% endfor %}
+                            </tbody>
+                        </table>
+                     </div>
+                     <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr><th colspan="2" class="text-center text-success">Покупка (Bids)</th></tr>
+                                <tr><th>Цена (USD)</th><th>Кол-во {{ coin }}</th></tr>
+                            </thead>
+                            <tbody>
+                            {% for bid in book.bids %}
+                                <tr>
+                                    <td class="text-success">{{ bid.price_per_unit | format_decimal(precision=4) }}</td>
+                                    <td>{{ bid.amount_crypto_remaining | format_decimal(precision=8) }}</td>
+                                </tr>
+                             {% else %}
+                                <tr><td colspan="2" class="text-center text-muted small">Нет предложений</td></tr>
+                             {% endfor %}
+                            </tbody>
+                        </table>
+                     </div>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+     </div>
+
+
+    <!-- История Моих P2P Сделок -->
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title">История Моих P2P Сделок (Последние 20)</h3>
+            {% if my_p2p_trades %}
+            <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th>Время</th>
+                            <th>Пара</th>
+                            <th>Тип</th>
+                            <th>Цена (USD)</th>
+                            <th>Кол-во Крипты</th>
+                            <th>Сумма (USD)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for trade in my_p2p_trades %}
+                         {% set is_buyer = trade.buyer_id == user_id %}
+                        <tr class="{{ 'table-success' if is_buyer else 'table-danger' }}">
+                            <td>{{ trade.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ trade.crypto_currency }}/{{ trade.fiat_currency }}</td>
+                            <td>{{ 'Покупка' if is_buyer else 'Продажа' }}</td>
+                            <td>{{ trade.price_per_unit | format_decimal(precision=4) }}</td>
+                            <td>{{ trade.amount_crypto | format_decimal(precision=8) }}</td>
+                            <td>{{ (trade.price_per_unit * trade.amount_crypto) | format_decimal(precision=2) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                 </table>
+            </div>
+            {% else %}
+            <p>У вас еще не было P2P сделок.</p>
+            {% endif %}
+        </div>
+    </div>
+
+</div> {# End Container #}
+{% endblock %}
+
+
+{% macro format_decimal(value, precision=8) %}
+{# Простой макрос для форматирования Decimal (улучшить при необходимости) #}
+{% if value is not none %}
+    {{ "%.*f"|format(precision, value) }}
+{% else %}
+    0.0
+{% endif %}
+{% endmacro %}
+

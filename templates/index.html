@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Главная - Цены{% endblock %}
+
+{% block content %}
+    <div class="card"> <!-- Оборачиваем контент в карточку -->
+        <h2>Текущие Цены</h2>
+        {% if prices %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Монета</th>
+                        <th>Цена (USD)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for coin, price in prices.items() %}
+                    <tr>
+                        <td><strong>{{ coin }}</strong></td>
+                        <td>${{ "%.2f"|format(price) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Не удалось загрузить цены.</p>
+        {% endif %}
+    </div> <!-- Конец карточки -->
+{% endblock %}

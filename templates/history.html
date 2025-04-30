@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}История Транзакций{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <h2>История Транзакций</h2>
+        {% if transactions %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Дата и время (UTC)</th>
+                        <th>Тип</th>
+                        <th>Отдано</th>
+                        <th>Получено</th>
+                        <th>Цена за единицу</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tx in transactions %}
+                    <tr>
+                        <td>{{ tx.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td>
+                            {% if tx.type == 'buy' %}
+                                <span style="color: green;">Покупка</span>
+                            {% elif tx.type == 'sell' %}
+                                <span style="color: red;">Продажа</span>
+                            {% elif tx.type == 'deposit' %}
+                                 <span style="color: blue;">Депозит</span>
+                            {% elif tx.type == 'withdraw' %}
+                                <span style="color: orange;">Вывод</span>
+                            {% else %}
+                                {{ tx.type | capitalize }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if tx.amount_from %}
+                                {{ "%.8f"|format(tx.amount_from) }} {{ tx.currency_from }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                         <td>
+                            {% if tx.amount_to %}
+                                {{ "%.8f"|format(tx.amount_to) }} {{ tx.currency_to }}
+                            {% else %}
+                                 -
+                            {% endif %}
+                         </td>
+                        <td>
+                            {% if tx.price %}
+                                ${{ "%.4f"|format(tx.price) }}
+                                <small>({{ tx.currency_from }}/{{ tx.currency_to }})</small>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>У вас пока нет транзакций.</p>
+        {% endif %}
+    </div>
+{% endblock %}
+
